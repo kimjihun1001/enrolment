@@ -34,6 +34,97 @@ namespace Enrollment_TextFile
         // 총 학점
         public static int unitTotal = SumTotalUnit();
 
+        // 해당 과목의 요일, 시간을 가져오는 함수 
+        public static List<double> GetTime(Subject args)
+        {
+            List<double> dayAndTime = new List<double>();
+            // 요일, 시간, 요일, 시간 
+            string[] timeSplit1 = args.time.Split(' ');
+            // 홀수번째에서 요일 가져오고, 짝수번째에서 시간 가져오기 
+            for (int i = 0; i < timeSplit1.Length; i++)
+            {
+                switch (timeSplit1[i])
+                {
+                    case "월":
+                        dayAndTime.Add(0);
+                        break;
+                    case "화":
+                        dayAndTime.Add(1);
+                        break;
+                    case "수":
+                        dayAndTime.Add(2);
+                        break;
+                    case "목":
+                        dayAndTime.Add(3);
+                        break;
+                    case "금":
+                        dayAndTime.Add(4);
+                        break;
+                    default:
+                        break;
+                }
+
+                i++;
+                string[] timeSplit2 = timeSplit1[i].Split('~');
+                string[] timeSplit3 = timeSplit2[0].Split(':');
+                string[] timeSplit4 = timeSplit2[1].Split(':');
+
+                for (int j = 0; j < 2; j++)
+                {
+                    if (timeSplit3[j] == "00")
+                    {
+                        timeSplit3[j] = "0";
+                    }
+                    else if (timeSplit3[j] == "30")
+                    {
+                        timeSplit3[j] = "0.5";
+                    }
+                    else { }
+
+                    if (timeSplit4[j] == "00")
+                    {
+                        timeSplit4[j] = "0";
+                    }
+                    else if (timeSplit4[j] == "30")
+                    {
+                        timeSplit4[j] = "0.5";
+                    }
+                    else { }
+                }
+                double startTime = int.Parse(timeSplit3[0]) + double.Parse(timeSplit3[1]);
+                double endTime = int.Parse(timeSplit4[0]) + double.Parse(timeSplit4[1]);
+                dayAndTime.Add(startTime);
+                dayAndTime.Add(endTime);
+            }
+
+            // 요일, 시작시간, 끝시간, ... 
+            return dayAndTime;
+        }
+
+        // 두 과목이 겹치는지 비교하는 함수
+        public static bool CheckTime(Subject args, Subject args2)
+        {
+            bool isOverlapped = false;
+            for (int i = 0; i < GetTime(args).Count; i += 3)
+            {
+                for (int j = 0; j < GetTime(args2).Count; j += 3)
+                {
+                    if (GetTime(args)[i] == GetTime(args2)[j])
+                    {
+                        // 겹치면 아웃 
+                        if ((GetTime(args)[i + 2] > GetTime(args2)[j + 1]) && (GetTime(args)[i + 1] < GetTime(args2)[j + 2]))
+                        {
+                            isOverlapped = true;
+                        }
+                        else { }
+                    }
+                    else { }
+                }
+            }
+            
+            return isOverlapped;
+        }
+
         // 콘솔 클리어 & 타이틀
         public static void PrintTitle()
         {
@@ -247,8 +338,8 @@ namespace Enrollment_TextFile
                 }
                 else
                 {
-                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
-                    string formatContent = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
                     Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
                     Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
                     for (int i = 0; i < searchedList.Count; i++)
@@ -262,29 +353,42 @@ namespace Enrollment_TextFile
             bool isEnrolmentDone = false;
             while (!isEnrolmentDone)
             {
-                bool enrolSuccess = false;
+                bool enrolSuccess = true;
+                bool isNewinputValid = false;
                 string newinput = Console.ReadLine();
                 for (int i = 0; i < searchedList.Count; i++)
                 {
                     if (searchedList[i].number == newinput)
                     {
-                        for (int j = 0; j < enrolmentList.Count; j++)
+                        // 검색 결과 내에 입력한 값이 있는데 오류가 발생한 경우이기 때문에 true로 바꿔준다 
+                        isNewinputValid = true;
+
+                        if (unitTotal + double.Parse(searchedList[i].unit) > 21)
                         {
-                            if (searchedList[i].id == enrolmentList[j].id)
+                            Console.WriteLine("21학점을 초과합니다. 다시 입력해보세요: ");
+                            enrolSuccess = false;
+                            break;
+                        }
+                        else
+                        {
+                            for (int j = 0; j < enrolmentList.Count; j++)
                             {
-                                Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
-                                break;
-                            }
-                            else if (unitTotal + int.Parse(searchedList[i].unit) > 21)
-                            {
-                                Console.WriteLine("21학점을 초과합니다. 다시 입력해보세요: ");
-                                break;
-                            }
-                            else
-                            {
-                                enrolSuccess = true;
+                                if (searchedList[i].id == enrolmentList[j].id)
+                                {
+                                    Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else if (CheckTime(searchedList[i], enrolmentList[j]))
+                                {
+                                    Console.WriteLine("기존 신청 과목과 시간이 겹칩니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else { }
                             }
                         }
+
                         if (enrolSuccess == true)
                         {
                             Console.WriteLine("해당 과목을 수강 신청했습니다.");
@@ -297,7 +401,7 @@ namespace Enrollment_TextFile
                     else { }
                 }
 
-                if (isEnrolmentDone == false && enrolSuccess == false)
+                if (isEnrolmentDone == false && enrolSuccess == false && isNewinputValid == false)
                 {
                     Console.WriteLine("검색 결과에 해당 번호의 과목이 없습니다. 다시 입력해보세요: ");
                 }
