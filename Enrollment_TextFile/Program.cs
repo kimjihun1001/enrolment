@@ -442,8 +442,8 @@ namespace Enrollment_TextFile
                 }
                 else
                 {
-                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
-                    string formatContent = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
                     Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
                     Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
                     for (int i = 0; i < searchedList.Count; i++)
@@ -457,23 +457,43 @@ namespace Enrollment_TextFile
             bool isEnrolmentDone = false;
             while (!isEnrolmentDone)
             {
-                bool enrolledAlready = false;
+                bool enrolSuccess = true;
+                bool isNewinputValid = false;
                 string newinput = Console.ReadLine();
                 for (int i = 0; i < searchedList.Count; i++)
                 {
                     if (searchedList[i].number == newinput)
                     {
-                        for (int j=0; j< enrolmentList.Count; j++)
+                        // 검색 결과 내에 입력한 값이 있는데 오류가 발생한 경우이기 때문에 true로 바꿔준다 
+                        isNewinputValid = true;
+
+                        if (unitTotal + double.Parse(searchedList[i].unit) > 21)
                         {
-                            if (searchedList[i].id == enrolmentList[j].id)
-                            {
-                                Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
-                                enrolledAlready = true;
-                                break;
-                            }
-                            else { }
+                            Console.WriteLine("21학점을 초과합니다. 다시 입력해보세요: ");
+                            enrolSuccess = false;
+                            break;
                         }
-                        if (enrolledAlready == false)
+                        else
+                        {
+                            for (int j = 0; j < enrolmentList.Count; j++)
+                            {
+                                if (searchedList[i].id == enrolmentList[j].id)
+                                {
+                                    Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else if (CheckTime(searchedList[i], enrolmentList[j]))
+                                {
+                                    Console.WriteLine("기존 신청 과목과 시간이 겹칩니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else { }
+                            }
+                        }
+
+                        if (enrolSuccess == true)
                         {
                             Console.WriteLine("해당 과목을 수강 신청했습니다.");
                             enrolmentList.Add(searchedList[i]);
@@ -485,7 +505,7 @@ namespace Enrollment_TextFile
                     else { }
                 }
 
-                if (isEnrolmentDone == false && enrolledAlready == false)
+                if (isEnrolmentDone == false && enrolSuccess == false && isNewinputValid == false)
                 {
                     Console.WriteLine("검색 결과에 해당 번호의 과목이 없습니다. 다시 입력해보세요: ");
                 }
@@ -526,8 +546,8 @@ namespace Enrollment_TextFile
                 }
                 else
                 {
-                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
-                    string formatContent = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
                     Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
                     Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
                     for (int i = 0; i < searchedList.Count; i++)
@@ -541,23 +561,43 @@ namespace Enrollment_TextFile
             bool isEnrolmentDone = false;
             while (!isEnrolmentDone)
             {
-                bool enrolledAlready = false;
+                bool enrolSuccess = true;
+                bool isNewinputValid = false;
                 string newinput = Console.ReadLine();
                 for (int i = 0; i < searchedList.Count; i++)
                 {
                     if (searchedList[i].number == newinput)
                     {
-                        for (int j = 0; j < enrolmentList.Count; j++)
+                        // 검색 결과 내에 입력한 값이 있는데 오류가 발생한 경우이기 때문에 true로 바꿔준다 
+                        isNewinputValid = true;
+
+                        if (unitTotal + double.Parse(searchedList[i].unit) > 21)
                         {
-                            if (searchedList[i].id == enrolmentList[j].id)
-                            {
-                                Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
-                                enrolledAlready = true;
-                                break;
-                            }
-                            else { }
+                            Console.WriteLine("21학점을 초과합니다. 다시 입력해보세요: ");
+                            enrolSuccess = false;
+                            break;
                         }
-                        if (enrolledAlready == false)
+                        else
+                        {
+                            for (int j = 0; j < enrolmentList.Count; j++)
+                            {
+                                if (searchedList[i].id == enrolmentList[j].id)
+                                {
+                                    Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else if (CheckTime(searchedList[i], enrolmentList[j]))
+                                {
+                                    Console.WriteLine("기존 신청 과목과 시간이 겹칩니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else { }
+                            }
+                        }
+
+                        if (enrolSuccess == true)
                         {
                             Console.WriteLine("해당 과목을 수강 신청했습니다.");
                             enrolmentList.Add(searchedList[i]);
@@ -569,7 +609,7 @@ namespace Enrollment_TextFile
                     else { }
                 }
 
-                if (isEnrolmentDone == false && enrolledAlready == false)
+                if (isEnrolmentDone == false && enrolSuccess == false && isNewinputValid == false)
                 {
                     Console.WriteLine("검색 결과에 해당 번호의 과목이 없습니다. 다시 입력해보세요: ");
                 }
@@ -610,8 +650,8 @@ namespace Enrollment_TextFile
                 }
                 else
                 {
-                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
-                    string formatContent = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
                     Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
                     Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
                     for (int i = 0; i < searchedList.Count; i++)
@@ -625,23 +665,43 @@ namespace Enrollment_TextFile
             bool isEnrolmentDone = false;
             while (!isEnrolmentDone)
             {
-                bool enrolledAlready = false;
+                bool enrolSuccess = true;
+                bool isNewinputValid = false;
                 string newinput = Console.ReadLine();
                 for (int i = 0; i < searchedList.Count; i++)
                 {
                     if (searchedList[i].number == newinput)
                     {
-                        for (int j = 0; j < enrolmentList.Count; j++)
+                        // 검색 결과 내에 입력한 값이 있는데 오류가 발생한 경우이기 때문에 true로 바꿔준다 
+                        isNewinputValid = true;
+
+                        if (unitTotal + double.Parse(searchedList[i].unit) > 21)
                         {
-                            if (searchedList[i].id == enrolmentList[j].id)
-                            {
-                                Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
-                                enrolledAlready = true;
-                                break;
-                            }
-                            else { }
+                            Console.WriteLine("21학점을 초과합니다. 다시 입력해보세요: ");
+                            enrolSuccess = false;
+                            break;
                         }
-                        if (enrolledAlready == false)
+                        else
+                        {
+                            for (int j = 0; j < enrolmentList.Count; j++)
+                            {
+                                if (searchedList[i].id == enrolmentList[j].id)
+                                {
+                                    Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else if (CheckTime(searchedList[i], enrolmentList[j]))
+                                {
+                                    Console.WriteLine("기존 신청 과목과 시간이 겹칩니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else { }
+                            }
+                        }
+
+                        if (enrolSuccess == true)
                         {
                             Console.WriteLine("해당 과목을 수강 신청했습니다.");
                             enrolmentList.Add(searchedList[i]);
@@ -653,7 +713,7 @@ namespace Enrollment_TextFile
                     else { }
                 }
 
-                if (isEnrolmentDone == false && enrolledAlready == false)
+                if (isEnrolmentDone == false && enrolSuccess == false && isNewinputValid == false)
                 {
                     Console.WriteLine("검색 결과에 해당 번호의 과목이 없습니다. 다시 입력해보세요: ");
                 }
@@ -694,8 +754,8 @@ namespace Enrollment_TextFile
                 }
                 else
                 {
-                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
-                    string formatContent = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-15}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+                    string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
                     Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
                     Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
                     for (int i = 0; i < searchedList.Count; i++)
@@ -709,23 +769,43 @@ namespace Enrollment_TextFile
             bool isEnrolmentDone = false;
             while (!isEnrolmentDone)
             {
-                bool enrolledAlready = false;
+                bool enrolSuccess = true;
+                bool isNewinputValid = false;
                 string newinput = Console.ReadLine();
                 for (int i = 0; i < searchedList.Count; i++)
                 {
                     if (searchedList[i].number == newinput)
                     {
-                        for (int j = 0; j < enrolmentList.Count; j++)
+                        // 검색 결과 내에 입력한 값이 있는데 오류가 발생한 경우이기 때문에 true로 바꿔준다 
+                        isNewinputValid = true;
+
+                        if (unitTotal + double.Parse(searchedList[i].unit) > 21)
                         {
-                            if (searchedList[i].id == enrolmentList[j].id)
-                            {
-                                Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
-                                enrolledAlready = true;
-                                break;
-                            }
-                            else { }
+                            Console.WriteLine("21학점을 초과합니다. 다시 입력해보세요: ");
+                            enrolSuccess = false;
+                            break;
                         }
-                        if (enrolledAlready == false)
+                        else
+                        {
+                            for (int j = 0; j < enrolmentList.Count; j++)
+                            {
+                                if (searchedList[i].id == enrolmentList[j].id)
+                                {
+                                    Console.WriteLine("해당 학수번호의 과목은 이미 수강 신청되어있습니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else if (CheckTime(searchedList[i], enrolmentList[j]))
+                                {
+                                    Console.WriteLine("기존 신청 과목과 시간이 겹칩니다. 다시 입력해보세요: ");
+                                    enrolSuccess = false;
+                                    break;
+                                }
+                                else { }
+                            }
+                        }
+
+                        if (enrolSuccess == true)
                         {
                             Console.WriteLine("해당 과목을 수강 신청했습니다.");
                             enrolmentList.Add(searchedList[i]);
@@ -737,7 +817,7 @@ namespace Enrollment_TextFile
                     else { }
                 }
 
-                if (isEnrolmentDone == false && enrolledAlready == false)
+                if (isEnrolmentDone == false && enrolSuccess == false && isNewinputValid == false)
                 {
                     Console.WriteLine("검색 결과에 해당 번호의 과목이 없습니다. 다시 입력해보세요: ");
                 }
@@ -760,31 +840,170 @@ namespace Enrollment_TextFile
         // 1-2 화면: 수강 강의 삭제 
         public static void PrintScreen_1_2()
         {
+            PrintTitle();
 
+            string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+            string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+            Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
+            Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
+            for (int i = 0; i < enrolmentList.Count; i++)
+            {
+                Console.WriteLine(formatContent, enrolmentList[i].number, enrolmentList[i].major, enrolmentList[i].id, enrolmentList[i].group, enrolmentList[i].name, enrolmentList[i].division, enrolmentList[i].grade, enrolmentList[i].unit, enrolmentList[i].time, enrolmentList[i].classroom, enrolmentList[i].professor, enrolmentList[i].language);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("내가 수강 신청한 총 학점: " + unitTotal);
+            Console.WriteLine();
+            Console.Write("삭제하길 원하는 강의의 번호(No.)를 입력하세요: ");
+            bool isDeleteDone = false;
+            while (!isDeleteDone)
+            {
+                string input = Console.ReadLine();
+                bool isInputValid = false;
+                for (int i = 0; i < enrolmentList.Count; i++)
+                {
+                    if (input == enrolmentList[i].number)
+                    {
+                        Console.WriteLine("해당 과목이 삭제되었습니다.");
+                        enrolmentList.RemoveAt(i);
+                        isInputValid = true;
+                        isDeleteDone = true;
+                        break;
+                    }
+                    else { }
+                }
+                if (isInputValid == false)
+                {
+                    Console.Write("수강 신청 목록 중에 입력하신 번호에 해당하는 과목이 없습니다. 다시 입력하세요: ");
+                }
+                else { }
+            }
+            Console.WriteLine("삭제를 계속 하시겠습니까? Y/N");
+            bool isDeleteFinished = false;
+            while (!isDeleteFinished)
+            {
+                string answer = Console.ReadLine();
+                if (answer == "Y" || answer == "y")
+                {
+                    PrintScreen_1_2();
+                    break;
+                }
+                else if (answer == "N" || answer == "n")
+                {
+                    PrintScreen_1();
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("다시 입력하세요: ");
+                }
+            }
         }
 
         // 1-3 화면: 수강 강의 조회 
         public static void PrintScreen_1_3()
         {
+            PrintTitle();
 
+            string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+            string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+            Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
+            Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
+            for (int i = 0; i < enrolmentList.Count; i++)
+            {
+                Console.WriteLine(formatContent, enrolmentList[i].number, enrolmentList[i].major, enrolmentList[i].id, enrolmentList[i].group, enrolmentList[i].name, enrolmentList[i].division, enrolmentList[i].grade, enrolmentList[i].unit, enrolmentList[i].time, enrolmentList[i].classroom, enrolmentList[i].professor, enrolmentList[i].language);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("내가 수강 신청한 총 학점: " + unitTotal);
+            Console.WriteLine("뒤로 돌아가려면 ESC를 누르세요.");
+            while (Console.ReadKey().Key != ConsoleKey.Escape) { }
+            PrintScreen_1();
         }
 
         // 1-4 화면: 전체 강의 목록
         public static void PrintScreen_1_4()
         {
+            PrintTitle();
 
+            string formatTitle = "{0,-5}{1,-10}{2,-10}{3,-5}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+            string formatContent = "{0,-5}{1,-10}{2,-14}{3,-7}{4,-22}{5,-7}{6,-5}{7,-5}{8,-35}{9,-15}{10,-25}{11,-5}";
+            Console.WriteLine(formatTitle, "No.", "개설학과전공", "학수번호", "분반", "교과목명", "이수구분", "학년", "학점", "요일 및 강의시간", "강의실", "메인교수명", "강의언어");
+            Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------");
+            for (int i = 0; i < subjectList.Count; i++)
+            {
+                Console.WriteLine(formatContent, subjectList[i].number, subjectList[i].major, subjectList[i].id, subjectList[i].group, subjectList[i].name, subjectList[i].division, subjectList[i].grade, subjectList[i].unit, subjectList[i].time, subjectList[i].classroom, subjectList[i].professor, subjectList[i].language);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("뒤로 돌아가려면 ESC를 누르세요.");
+            while (Console.ReadKey().Key != ConsoleKey.Escape) { }
+            PrintScreen_1();
         }
 
-        // 1-5 화면: 강의 검
+        // 1-5 화면: 강의 검색 
         public static void PrintScreen_1_5()
         {
+            Console.Clear();
+            Console.WriteLine("1. 개설 학과 전공으로 검색");
+            Console.WriteLine("2. 학수 번호로 검색");
+            Console.WriteLine("3. 교과목 명으로 검색");
+            Console.WriteLine("4. 강의 대상 학년으로 검색");
+            Console.WriteLine("5. 교수명으로 검색");
+            Console.WriteLine("6. 처음 화면으로 돌아가기");
+            Console.WriteLine("7. 종료");
+            Console.WriteLine();
+            Console.Write("원하시는 메뉴의 숫자를 입력해주세요: ");
 
+            bool isInputWrong = true;
+
+            while (isInputWrong)
+            {
+                string input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "1":
+                        PrintScreen_1_1_1();
+                        isInputWrong = false;
+                        break;
+                    case "2":
+                        PrintScreen_1_1_2();
+                        isInputWrong = false;
+                        break;
+                    case "3":
+                        PrintScreen_1_1_3();
+                        isInputWrong = false;
+                        break;
+                    case "4":
+                        PrintScreen_1_1_4();
+                        isInputWrong = false;
+                        break;
+                    case "5":
+                        PrintScreen_1_1_5();
+                        isInputWrong = false;
+                        break;
+                    case "6":
+                        PrintMainScreen();
+                        isInputWrong = false;
+                        break;
+                    case "7":
+                        Environment.Exit(0);
+                        isInputWrong = false;
+                        break;
+                    default:
+                        // set cursor 필요 
+                        Console.Write("잘못된 값을 입력했습니다. 다시 입력하세요: ");
+                        isInputWrong = true;
+                        break;
+                }
+            }
         }
 
-        // 1-6 화면
-        public static void PrintScreen_1_6()
+        // 1-5-1
+        public static void PrintScreen_1_5_1()
         {
-
+             
         }
 
         // 2번 화면 
@@ -793,10 +1012,10 @@ namespace Enrollment_TextFile
 
         }
 
-        // 3번 화면 
+        // 3번 화면: 나의 시간표 
         public static void PrintScreen_3()
         {
-
+            GetTime(enrolmentList[i])
         }
 
         // 메인 메쏘드 
@@ -814,7 +1033,6 @@ namespace Enrollment_TextFile
                     DisassembleSubjects(subjectTextList[i]);
                     //Console.WriteLine(subjectList[i - 1].name);
                 }
-
             }
             catch (SystemException e)
             {
