@@ -17,6 +17,8 @@ namespace Enrollment_TextFile
         public string classroom;
         public string professor;
         public string language;
+        public string enrollment;
+        public string interest;
 
 
         public Subject(string[] args)
