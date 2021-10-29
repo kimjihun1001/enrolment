@@ -6,8 +6,6 @@ namespace Enrollment_TextFile
 {
     class Program
     {
-        
-
         // 메인 메쏘드 
         static void Main(string[] args)
         {
